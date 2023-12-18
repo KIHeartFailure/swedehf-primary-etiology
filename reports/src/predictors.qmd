@@ -1,0 +1,209 @@
+```{r}
+#| label: predictors
+#| cache: true
+#| cache.comments: false
+#| output: false
+
+crudemod <- summary(crudemodraw <- multinom(shf_ef_cat ~ shf_primaryetiology_cat, data = rsdata))
+crude <- tibble(
+  type = "Crude",
+  var = rep(colnames(crudemod$coefficients), each = 2),
+  ef = rep(rownames(crudemod$coefficients), 4),
+  or = c(exp(crudemod$coefficients)),
+  lci = c(exp(crudemod$coefficients - global_z05 * crudemod$standard.errors)),
+  uci = c(exp(crudemod$coefficients + global_z05 * crudemod$standard.errors)),
+  orci = paste0(
+    fn(or, 2), " (",
+    fn(lci, 2), "-",
+    fn(uci, 2), ")" # , "
+  ),
+  cols = factor(case_when(
+    lci < 1 & uci > 1 | lci > 1 & uci < 1 ~ 2,
+    or >= 1 ~ 1,
+    or < 1 ~ 3
+  ))
+) %>%
+  filter(!var %in% c("(Intercept)"))
+
+adjmod <- with(imprsdata, multinom(formula(paste0("shf_ef_cat ~ shf_primaryetiology_cat + ", paste(modvars, collapse = " + ")))))
+adjmod <- summary(pool(adjmod))
+adj <- tibble(
+  type = "Adjusted",
+  ef = adjmod$y.level,
+  var = as.character(adjmod$term),
+  or = exp(adjmod$estimate),
+  lci = exp(adjmod$estimate - global_z05 * adjmod$std.error),
+  uci = exp(adjmod$estimate + global_z05 * adjmod$std.error),
+  # p = fn(adjmod$p.value, dig = 3, p = TRUE),
+  orci = paste0(
+    fn(or, 2), " (",
+    fn(lci, 2), "-",
+    fn(uci, 2), ")" # , ",
+    # p
+  ),
+  cols = factor(case_when(
+    adjmod$p.value >= 0.05 ~ 2,
+    or >= 1 ~ 1,
+    or < 1 ~ 3
+  ))
+) %>%
+  filter(str_detect(var, "shf_primaryetiology_cat"))
+
+both <- bind_rows(crude, adj) %>%
+  mutate(
+    var = str_remove(var, "shf_primaryetiology_cat"),
+    var2 = forcats::fct_inorder(var),
+    type2 = forcats::fct_inorder(type)
+  ) %>%
+  group_by(ef) %>%
+  arrange(var2, type2) %>%
+  mutate(order = n():1) %>%
+  ungroup() %>%
+  arrange(order)
+```
+
+```{r}
+#| label: fig-predictors
+#| cache: true
+#| cache.comments: false
+#| dependson: predictors
+#| fig-cap: "Association between primary etiology and EF"
+#| fig-width: 10
+#| fig-height: 6
+
+# plot it
+size_use <- 10
+
+p1 <- ggplot(both %>% filter(ef == "HFmrEF"), aes(x = or, y = order, color = cols)) +
+  # Add dot plot and error bars
+  geom_errorbar(aes(xmin = lci, xmax = uci), width = 0.2) +
+  geom_point(size = 1, shape = 15) +
+  # Add a reference dashed line at 1
+  geom_vline(xintercept = 1, linetype = "longdash") +
+  scale_color_brewer(palette = "Dark2") +
+  theme_classic() +
+  theme(
+    text = element_text(size = size_use),
+    legend.position = "none",
+    axis.ticks.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.line.y = element_line(colour = "white"),
+    plot.title = element_text(hjust = 0.5),
+    plot.margin = unit(c(0, 0, 0, 0), "mm")
+  ) +
+  scale_y_continuous(limits = c(1, 6)) +
+  scale_x_continuous(trans = "log", breaks = c(0.3, 1, 2), limits = c(.3, 2)) +
+  labs(x = "Odds Ratio (95% CI)") +
+  ggtitle("HFmrEF vs HFpEF")
+# geom_hline(yintercept = nrow(logregout) + 0.75, linewidth=0.5)
+
+p2 <- ggplot(both %>% filter(ef == "HFrEF"), aes(x = or, y = order, color = cols)) +
+  # Add dot plot and error bars
+  geom_errorbar(aes(xmin = lci, xmax = uci), width = 0.1) +
+  geom_point(size = 1.5, shape = 15) +
+  # Add a reference dashed line at 1
+  geom_vline(xintercept = 1, linetype = "longdash") +
+  scale_color_brewer(palette = "Dark2") +
+  theme_classic() +
+  theme(
+    text = element_text(size = size_use),
+    legend.position = "none",
+    axis.ticks.y = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.line.y = element_line(colour = "white"),
+    plot.title = element_text(hjust = 0.5),
+    plot.margin = unit(c(0, 0, 0, 0), "mm")
+  ) +
+  scale_y_continuous(limits = c(1, 6)) +
+  scale_x_continuous(trans = "log", breaks = c(0.3, 1, 2), limits = c(.3, 2)) +
+  labs(x = "Odds Ratio (95% CI)") +
+  ggtitle("HFrEF vs HFpEF")
+# geom_hline(yintercept = nrow(logregout) + 0.75, linewidth=0.5)
+
+t_type <- ggplot(both %>% filter(ef == "HFmrEF")) +
+  geom_text(aes(y = order, x = 1, label = type2), size = size_use / .pt, hjust = 0) +
+  ggtitle(" ") +
+  xlab("  ") +
+  theme_classic() +
+  theme(
+    text = element_text(size = size_use),
+    axis.line.y = element_blank(),
+    axis.line.x = element_line(color = "white"),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.ticks.x = element_line(color = "white"),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(color = "white"),
+    plot.title = element_text(hjust = 0.5),
+    plot.margin = unit(c(0, 0, 0, 0), "mm")
+  ) +
+  scale_y_continuous(limits = c(1, 6))
+
+t_pe <- ggplot(both %>% filter(ef == "HFmrEF" & type == "Crude")) +
+  geom_text(aes(y = order - 0.5, x = 1, label = paste0(var2, " vs. Other")), size = size_use / .pt, hjust = 0) +
+  ggtitle(" ") +
+  xlab("  ") +
+  theme_classic() +
+  theme(
+    text = element_text(size = size_use),
+    axis.line.y = element_blank(),
+    axis.line.x = element_line(color = "white"),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.ticks.x = element_line(color = "white"),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(color = "white"),
+    plot.title = element_text(hjust = 0.5),
+    plot.margin = unit(c(0, 0, 0, 0), "mm")
+  ) +
+  scale_y_continuous(limits = c(1, 6))
+
+t_or1 <- ggplot(both %>% filter(ef == "HFmrEF")) +
+  geom_text(aes(y = order, x = 1, label = orci), size = size_use / .pt) +
+  # Add a line above graph
+  # geom_hline(yintercept=4.6, size=2) +
+  ggtitle("Odds Ratio\n(95% CI)") +
+  xlab("  ") +
+  theme_classic() +
+  theme(
+    text = element_text(size = size_use),
+    axis.line.y = element_blank(),
+    axis.line.x = element_line(color = "white"),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.ticks.x = element_line(color = "white"),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(color = "white"),
+    plot.title = element_text(hjust = 0.5),
+    plot.margin = unit(c(0, 0, 0, 0), "mm")
+  ) +
+  scale_y_continuous(limits = c(1, 6))
+
+t_or2 <- ggplot(both %>% filter(ef == "HFrEF")) +
+  geom_text(aes(y = order, x = 1, label = orci), size = size_use / .pt) +
+  # Add a line above graph
+  # geom_hline(yintercept=4.6, size=2) +
+  ggtitle("Odds Ratio\n(95% CI)") +
+  xlab("  ") +
+  theme_classic() +
+  theme(
+    text = element_text(size = size_use),
+    axis.line.y = element_blank(),
+    axis.line.x = element_line(color = "white"),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.ticks.x = element_line(color = "white"),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(color = "white"),
+    plot.title = element_text(hjust = 0.5),
+    plot.margin = unit(c(0, 0, 0, 0), "mm")
+  ) +
+  scale_y_continuous(limits = c(1, 6))
+
+pall <- t_pe + t_type + t_or1 + p1 + t_or2 + p2 + plot_layout(ncol = 6, nrow = 1, widths = c(2.2, 0.9, 1, 1.2, 1, 1.2))
+
+create_pptx(pall, width = 10, height = 6)
+pall
+```
