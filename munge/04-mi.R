@@ -1,7 +1,7 @@
 # Impute missing values ---------------------------------------------------
 
 # Nelson-Aalen estimator
-na <- basehaz(coxph(Surv(sos_outtime_death, sos_out_deathcvhosphf == "Yes") ~ 1,
+na <- basehaz(coxph(Surv(sos_outtime_death, sos_out_deathhosphf == "Yes") ~ 1,
   data = rsdata, method = "breslow"
 ))
 

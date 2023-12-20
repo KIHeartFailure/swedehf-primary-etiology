@@ -1,9 +1,3 @@
-# Cut outcomes at 5 years
-
-rsdata <- cut_surv(rsdata, sos_out_deathcvhosphf, sos_outtime_hosphf, global_followup, cuttime = FALSE, censval = "No")
-rsdata <- cut_surv(rsdata, sos_out_hosphf, sos_outtime_hosphf, global_followup, cuttime = TRUE, censval = "No")
-rsdata <- cut_surv(rsdata, sos_out_deathcv, sos_outtime_death, global_followup, cuttime = FALSE, censval = "No")
-
 rsdata <- rsdata %>%
   mutate(
     shf_primaryetiology_cat = factor(case_when(
@@ -18,9 +12,7 @@ rsdata <- rsdata %>%
       shf_indexyear <= 2018 ~ "2016-2018",
       shf_indexyear <= 2021 ~ "2019-2021"
     )),
-    censdtm = pmin(shf_indexdtm + global_followup, censdtm),
     # comp risk outcomes
-    sos_out_deathcvhosphf_cr = create_crevent(sos_out_deathcvhosphf, sos_out_death, eventvalues = c("Yes", "Yes")),
     sos_out_hosphf_cr = create_crevent(sos_out_hosphf, sos_out_death, eventvalues = c("Yes", "Yes"))
   )
 

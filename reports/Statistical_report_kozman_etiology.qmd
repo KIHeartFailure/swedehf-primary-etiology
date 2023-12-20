@@ -116,6 +116,12 @@ Information on data sources, definitions etc. are found https://kiheartfailure.g
 
 {{< include src/vars.qmd >}}
 
+### Primary etiology
+
+In the SwedeHF CRF primary etiology is recorded in the following categories: 
+DCM, Heart valve disease, Hypertension, IHD, Known alcoholic cardiomyopathy, Other. 
+For this project DCM, Known alcoholic cardiomyopathy and Other were categorized as Other. 
+
 \clearpage
 
 # Statistical analysis 
@@ -125,8 +131,6 @@ Information on data sources, definitions etc. are found https://kiheartfailure.g
 All analyses were performed using `r sessionInfo()$R.version$version.string` [@r]. 
 The level of significance is set to 5%, two-sided. No adjustment for multiple 
 comparisons were made and therefore the results should be viewed with care.
-
-TO DO: Skicka projektansökan till swedehf styrgrupp. 
 
 ## Missing data
 
@@ -179,13 +183,9 @@ Cox proportional hazards regressions were used to model the time to first event.
 As a consistency analysis for the secondary outcomes, a sub-distributional hazards model[@fg] was used, 
 where deaths not defined as an event were treated as competing events.
 
-Data were censored at `r global_followup_years` years follow-up, 2021-12-31 or emigration from Sweden. 
+Data were censored at death (if itself not an event), 2021-12-31 or emigration from Sweden. 
 
 Separate analyses were further performed for the respective EF groups. 
-
-FRÅGA: Ska klippa tid vid 5 år?
-
-FRÅGA: Ska vara cvd/1hfh? eller acdöd/1hfh? (lars skrev död)
 
 ### Assumptions
 

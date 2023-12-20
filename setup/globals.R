@@ -12,6 +12,3 @@ shfdbpath <- "D:/STATISTIK/Projects/20210525_shfdb4/dm/"
 datadate <- "20220908"
 
 global_cols <- RColorBrewer::brewer.pal(7, "Dark2")
-
-global_followup_years <- 5
-global_followup <- 5 * 365.25
