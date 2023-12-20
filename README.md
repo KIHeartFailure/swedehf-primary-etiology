@@ -1,4 +1,4 @@
-# R code for the project Primary etiology across the EF spectrum: an analyses from the Swedish Heart Failure registry
+# R code for the project Etiology of heart failure across the ejection fraction spectrum and association with prognosis: an analyses from the Swedish Heart Failure Registry
 
 The aim of this R code is to be transparent and document the data handling 
 and statistical analyses performed for the project.

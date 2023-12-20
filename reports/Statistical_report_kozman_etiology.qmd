@@ -1,5 +1,5 @@
 ---
-title: "Statistical report: Primary etiology across the EF spectrum: an analyses from the Swedish Heart Failure Registry"
+title: "Statistical report: Etiology of heart failure across the ejection fraction spectrum and association with prognosis: an analyses from the Swedish Heart Failure Registry"
 subtitle: Draft
 date: "`r Sys.Date()`"
 cover: static/ki_logo_vert_rgb.png
