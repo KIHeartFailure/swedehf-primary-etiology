@@ -99,8 +99,8 @@ stratavars <- c("shf_location")
 outvars <- tibble(
   var = c("sos_out_deathhosphf", "sos_out_death", "sos_out_hosphf"),
   time = c("sos_outtime_death", "sos_outtime_death", "sos_outtime_hosphf"),
-  shortname = c("ACD/1HFH", "ACD", "1HFH"),
-  name = c("Composite all-cause death or First HF hospitalization", "All-cause death", "First HF hospitalization"),
+  shortname = c("Death/1st HFH", "Death", "1st HFH"),
+  name = c("Composite All-cause death or First HF hospitalization", "All-cause death", "First HF hospitalization"),
   composite = c(T, F, F),
   rep = c(F, F, F),
   primary = c(T, F, F),

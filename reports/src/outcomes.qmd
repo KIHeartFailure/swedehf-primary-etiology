@@ -45,7 +45,7 @@ outcomesfunc <- function(data = rsdata, impdata = imprsdata, time, event, eventn
 
   for (i in seq_along(levsef)) {
     ## 2 row - crude regression
-    out[2, 2] <- "Crude HR (95% CI), p-value"
+    out[2, 2] <- "Crude Hazard Ratio (95% CI), p-value"
     mod <- summary(modraw <- coxph(formula(paste0("Surv(", time, ",", event, "== 'Yes') ~ shf_primaryetiology_cat * relevel(shf_ef_cat, ref = '", levsef[i], "')")),
       data = data
     ))
@@ -66,7 +66,7 @@ outcomesfunc <- function(data = rsdata, impdata = imprsdata, time, event, eventn
     }
 
     ## 3 row - adjusted regression
-    out[3, 2] <- "Adjusted HR (95% CI), p-value"
+    out[3, 2] <- "Adjusted Hazard Ratio (95% CI), p-value"
     modraw <- with(impdata, coxph(formula(paste0(
       "Surv(", time, ",", event, " == 'Yes') ~ shf_primaryetiology_cat * relevel(shf_ef_cat, ref = '", levsef[i], "') + ", paste(coxvars, collapse = " + ")
     ))))
@@ -92,7 +92,7 @@ outcomesfunc <- function(data = rsdata, impdata = imprsdata, time, event, eventn
     }
 
     if (fg) {
-      out[4, 2] <- "Crude SHR (95% CI), p-value"
+      out[4, 2] <- "Crude Sub-distributional Hazard Ratio (95% CI), p-value"
       # mod <- summary(crr(
       #   ftime = data %>% pull(!!sym(time)),
       #   fstatus = data %>% pull(!!sym(paste0(event, "_cr"))),
@@ -113,7 +113,7 @@ outcomesfunc <- function(data = rsdata, impdata = imprsdata, time, event, eventn
       #   )
       # )
 
-      out[5, 2] <- "Adjusted SHR (95% CI), p-value"
+      out[5, 2] <- "Adjusted Sub-distributional Hazard Ratio (95% CI), p-value"
       # modvars_crr2 <- c(vars_crr[str_detect(vars_crr, paste0(xvar, "_cr_"))], modvars_crr)
       #  mod <- crr_mids(time, event = paste0(event, "_cr"), xvars = modvars_crr2, impdata)
       #  mod <- summary(pool(mod))
@@ -143,17 +143,19 @@ outcomesfunc <- function(data = rsdata, impdata = imprsdata, time, event, eventn
 out1 <- outcomesfunc(
   time = outvars$time[1],
   event = outvars$var[1],
-  eventname = outvars$name[1]
+  eventname = outvars$name[1],
+  fg = F
 )
 out2 <- outcomesfunc(
   time = outvars$time[2],
   event = outvars$var[2],
   eventname = outvars$name[2],
+  fg = F
 )
 out3 <- outcomesfunc(
   time = outvars$time[3],
   event = outvars$var[3],
-  eventname = outvars$name[3],
+  eventname = outvars$name[3]
 )
 outall <- rbind(out1, out2, out3)
 

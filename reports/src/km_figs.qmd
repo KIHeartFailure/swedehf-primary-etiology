@@ -37,7 +37,8 @@ kmfunc <- function(efcat, time, event, eventname) {
     mutate(
       strata = fct_rev(fct_inorder(str_remove_all(strata, "shf_primaryetiology_cat="))),
     )
-  ylim <- c(0, 1)
+  addon <- 0.3
+  ylim <- c(0, 1 + addon)
   ylab <- paste0(eventname, " (%)")
 
   p <- ggplot(plot_data, aes(x = time / 365, y = estimate, color = strata)) +
@@ -46,16 +47,17 @@ kmfunc <- function(efcat, time, event, eventname) {
     # scale_x_continuous(breaks = seq(0, endfollow, 1), limits = c(0, endfollow), expand = c(0, 0)) +
     # scale_y_continuous(labels = scales::label_percent(suffix = ""), limits = c(0, 1), expand = c(0, 0)) +
     scale_x_continuous(breaks = seq(0, end_followup, 1), limits = c(0, end_followup)) +
-    scale_y_continuous(labels = scales::label_percent(suffix = ""), limits = ylim) +
+    scale_y_continuous(labels = scales::label_percent(suffix = ""), breaks = seq(0, 1, 0.25), limits = ylim) +
     theme_classic() +
     theme(
       text = element_text(size = 20),
-      legend.position = "none"
+      legend.position = "none",
+      legend.title = element_blank()
     ) +
     labs(x = "Follow-up (years)", y = ylab) +
-    annotate("text", x = 0, y = c(.97, .87, .77, .67, .57), label = c("", levs), hjust = 0, size = 6, colour = c("black", global_cols[1:4])) +
-    annotate("text", x = 3.5, y = c(.97, .87, .77, .67, .57), label = cox_crude, hjust = 0.5, size = 6) +
-    annotate("text", x = 7, y = c(.97, .87, .77, .67, .57), label = cox_adj, hjust = 0.5, size = 6)
+    annotate("text", x = 0, y = c(1, .9, .8, .7, .6) + addon, label = c("", levs), hjust = 0, size = 6, colour = c("black", global_cols[1:4])) +
+    annotate("text", x = 3.5, y = c(1, .9, .8, .7, .6) + addon, label = cox_crude, hjust = 0.5, size = 6, colour = c("black", global_cols[1:4])) +
+    annotate("text", x = 7, y = c(1, .9, .8, .7, .6) + addon, label = cox_adj, hjust = 0.5, size = 6, colour = c("black", global_cols[1:4]))
 
   # n at risk
   table_data <- plot_data %>%
@@ -64,7 +66,7 @@ kmfunc <- function(efcat, time, event, eventname) {
     )
 
   t <- ggplot(table_data, aes(y = strata, x = time / 365)) +
-    geom_text(aes(label = n.risk), size = 6) +
+    geom_text(aes(label = n.risk), size = 6, colour = rep(global_cols[1:4], each = 6)) +
     # scale_x_continuous(breaks = seq(0, endfollow, 1), limits = c(0, endfollow), expand = c(0, 0)) +
     # scale_y_discrete(expand = c(0, 0)) +
     scale_x_continuous(breaks = seq(0, end_followup, 2), limits = c(0, end_followup)) +

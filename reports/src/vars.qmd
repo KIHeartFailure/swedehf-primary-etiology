@@ -79,8 +79,8 @@ vars <- vars %>%
     footnote_marker_alphabet(1, format = "latex"), ""
     ),
     footnote2 = if_else(str_detect(var, "hosp"), footnote_marker_alphabet(2, format = "latex"), ""),
-    footnote3 = if_else(str_detect(var, "death"), footnote_marker_alphabet(3, format = "latex"), ""),
-    footnote4 = if_else(Variable == "Charlson Comorbidity Index", footnote_marker_alphabet(4, format = "latex"), ""),
+    # footnote3 = if_else(str_detect(var, "death"), footnote_marker_alphabet(3, format = "latex"), ""),
+    footnote3 = if_else(Variable == "Charlson Comorbidity Index", footnote_marker_alphabet(3, format = "latex"), ""),
   ) %>%
   unite(datasource, starts_with("data"), sep = "; ", na.rm = TRUE) %>%
   mutate(
@@ -98,7 +98,7 @@ vars <- vars %>%
 footnotetext <- c(
   "Derived from diagnoses/operations in all positions, in-patient and out-patient speciality care within 5 years prior to index (ICD-10)/1987 (ICD-9) unless stated otherwise.",
   "Hospitalizations are derived from diagnoses in main position, in-patient care.",
-  "Cause of death is derived from the underlying cause of death.",
+  # "Cause of death is derived from the underlying cause of death.",
   "Derived from diagnoses in all positions, in-patient and out-patient speciality care within 10 years prior to index using ICD-9/10 according to Ludvigsson, 2021 (see reference)."
 )
 
@@ -110,8 +110,7 @@ vars_xls <- vars %>%
   add_row(Variable = "") %>%
   add_row(Variable = paste0("a ", footnotetext[1])) %>%
   add_row(Variable = paste0("b ", footnotetext[2])) %>%
-  add_row(Variable = paste0("c ", footnotetext[3])) %>%
-  add_row(Variable = paste0("d ", footnotetext[4]))
+  add_row(Variable = paste0("c ", footnotetext[3]))
 
 make_one_xlsxsheet(vars_xls,
   colnames = c("Variable", "Data source")

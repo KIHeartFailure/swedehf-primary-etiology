@@ -4,8 +4,8 @@ rsdata <- rsdata %>%
       shf_primaryetiology == "IHD" ~ 1,
       shf_primaryetiology == "Heart valve disease" ~ 2,
       shf_primaryetiology == "Hypertension" ~ 3,
-      TRUE ~ 0
-    ), levels = 0:3, labels = c("Other", "Ishemic", "Valvular", "Hypertensive")),
+      TRUE ~ 4
+    ), levels = 0:3, labels = c("Ishemic", "Valvular", "Hypertensive", "Other")),
     shf_ef_cat = factor(shf_ef_cat, levels = c("HFpEF", "HFmrEF", "HFrEF")),
     shf_indexyear_cat = factor(case_when(
       shf_indexyear <= 2015 ~ "2010-2015",
