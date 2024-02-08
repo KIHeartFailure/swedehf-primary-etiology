@@ -31,7 +31,6 @@ library(scales)
 # stats
 library(survival)
 library(cmprsk)
-library(MASS) # neg bin model
 library(epitools)
 library(survminer) # check assumptions
 library(splines)

@@ -2,7 +2,7 @@
 #| label: kmfunc
 #| cache: true
 #| cache.comments: false
-#| dependson: tbl-outcomes
+#| dependson: outcomesfunc
 
 end_followup <- 10
 
@@ -12,12 +12,12 @@ kmfunc <- function(efcat, time, event, eventname) {
 
   cox_crude <- c(
     "Crude HR (95% CI)",
-    gsub("\\,.*", "", outall %>% filter(Model %in% c("Crude HR (95% CI), p-value") & Outcome == outvars$name[nr]) %>% select(ends_with(efcat)))
+    gsub("\\,.*", "", outall %>% filter(EF == efcat & Outcome == outvars$name[nr]) %>% pull(hrcicrude))
   )
 
   cox_adj <- c(
     "Adjusted HR (95% CI)",
-    gsub("\\,.*", "", outall %>% filter(Model %in% c("Adjusted HR (95% CI), p-value") & Outcome == outvars$name[nr]) %>% select(ends_with(efcat)))
+    gsub("\\,.*", "", outall %>% filter(EF == efcat & Outcome == outvars$name[nr]) %>% pull(hrciadj))
   )
 
   fit <- survfit(formula(paste0("Surv(", time, ",", event, "== 'Yes') ~ shf_primaryetiology_cat")),
@@ -92,32 +92,32 @@ kmfunc <- function(efcat, time, event, eventname) {
 ```
 
 ```{r}
-#| label: fig-cic-ref
+#| label: fig-cic-pef
 #| cache: true
 #| cache.comments: false
 #| dependson: kmfunc
-#| fig-cap: "Cumulative incidence - HFrEF"
+#| fig-cap: "Cumulative incidence - HFpEF"
 #| fig-subcap: !expr outvars$name
 #| layout-ncol: 2
 #| layout-nrow: 2
 
 nr <- 1
 kmfunc(
-  efcat = "HFrEF",
+  efcat = "HFpEF",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr]
 )
 nr <- 2
 kmfunc(
-  efcat = "HFrEF",
+  efcat = "HFpEF",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr]
 )
 nr <- 3
 kmfunc(
-  efcat = "HFrEF",
+  efcat = "HFpEF",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr]
@@ -158,32 +158,32 @@ kmfunc(
 ```
 
 ```{r}
-#| label: fig-cic-pef
+#| label: fig-cic-ref
 #| cache: true
 #| cache.comments: false
 #| dependson: kmfunc
-#| fig-cap: "Cumulative incidence - HFpEF"
+#| fig-cap: "Cumulative incidence - HFrEF"
 #| fig-subcap: !expr outvars$name
 #| layout-ncol: 2
 #| layout-nrow: 2
 
 nr <- 1
 kmfunc(
-  efcat = "HFpEF",
+  efcat = "HFrEF",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr]
 )
 nr <- 2
 kmfunc(
-  efcat = "HFpEF",
+  efcat = "HFrEF",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr]
 )
 nr <- 3
 kmfunc(
-  efcat = "HFpEF",
+  efcat = "HFrEF",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr]

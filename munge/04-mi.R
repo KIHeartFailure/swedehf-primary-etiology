@@ -1,12 +1,12 @@
 # Impute missing values ---------------------------------------------------
 
 # Nelson-Aalen estimator
-na <- basehaz(coxph(Surv(sos_outtime_death, sos_out_deathhosphf == "Yes") ~ 1,
+na <- basehaz(coxph(Surv(sos_outtime_hosphf, sos_out_deathhosphf == "Yes") ~ 1,
   data = rsdata, method = "breslow"
 ))
 
 rsdatauseforimp <- left_join(rsdata, na, by = c("sos_outtime_death" = "time")) %>%
-  select(lopnr, shf_indexdtm, contains(outvars$var), !!!syms(outvars$time), !!!syms(modvars), shf_primaryetiology_cat, shf_ef_cat)
+  select(lopnr, shf_indexdtm, contains(outvars$var), !!!syms(outvars$time), !!!syms(modvars), contains("shf_primaryetiology_cat"), shf_ef_cat)
 
 noimpvars <- names(rsdatauseforimp)[!names(rsdatauseforimp) %in% modvars]
 
@@ -18,7 +18,7 @@ pred[noimpvars, ] <- 0 # redundant
 
 # change method used in imputation to prop odds model
 meth <- ini$method
-meth[c("scb_education", "shf_indexyear_cat", "shf_ntprobnp_cat", "scb_dispincome_cat")] <- "polr"
+meth[c("scb_education", "shf_indexyear_cat", "shf_ntprobnp_cat", "scb_dispincome_cat", "shf_age_cat")] <- "polr"
 meth[noimpvars] <- ""
 
 ## check no cores

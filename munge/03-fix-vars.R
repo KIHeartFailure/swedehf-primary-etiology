@@ -5,19 +5,14 @@ rsdata <- rsdata %>%
       shf_primaryetiology == "Heart valve disease" ~ 2,
       shf_primaryetiology == "Hypertension" ~ 3,
       TRUE ~ 4
-    ), levels = 0:3, labels = c("Ishemic", "Valvular", "Hypertensive", "Other")),
+    ), levels = 1:4, labels = c("Ishemic", "Valvular", "Hypertensive", "Other")),
     shf_ef_cat = factor(shf_ef_cat, levels = c("HFpEF", "HFmrEF", "HFrEF")),
     shf_indexyear_cat = factor(case_when(
       shf_indexyear <= 2015 ~ "2010-2015",
       shf_indexyear <= 2018 ~ "2016-2018",
       shf_indexyear <= 2021 ~ "2019-2021"
-    )),
-    # comp risk outcomes
-    sos_out_hosphf_cr = create_crevent(sos_out_hosphf, sos_out_death, eventvalues = c("Yes", "Yes"))
+    ))
   )
-
-## Create numeric variables needed for comp risk model
-rsdata <- create_crvar(rsdata, "shf_primaryetiology_cat")
 
 # income
 inc <- rsdata %>%

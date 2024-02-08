@@ -25,7 +25,8 @@ crude <- tibble(
 ) %>%
   filter(!var %in% c("(Intercept)"))
 
-adjmod <- with(imprsdata, multinom(formula(paste0("shf_ef_cat ~ shf_primaryetiology_cat + ", paste(modvars, collapse = " + ")))))
+modvarstmp <- setdiff(modvars, "shf_ef_cat")
+adjmod <- with(imprsdata, multinom(formula(paste0("shf_ef_cat ~ shf_primaryetiology_cat + ", paste(modvarstmp, collapse = " + ")))))
 adjmod <- summary(pool(adjmod))
 adj <- tibble(
   type = "Adjusted",
@@ -83,7 +84,7 @@ both <- bind_rows(
     ordergrid = ifelse(type %in% c("Crude", "Adjusted"), order, NA_character_)
   ) %>%
   ungroup() %>%
-  mutate(type = ifelse(type %in% c("Crude", "Adjusted"), paste0("   ", type), paste0(type, " vs Other")))
+  mutate(type = ifelse(type %in% c("Crude", "Adjusted"), paste0("   ", type), paste0(type, " vs ", levels(rsdata$shf_primaryetiology_cat)[1])))
 
 # plot it
 size_use <- 18
@@ -91,8 +92,7 @@ size_use <- 18
 # min(both$lci, na.rm = T)
 # max(both$uci, na.rm = T)
 
-xmin <- .3
-xmax <- 1.7
+xbreaks <- c(0.2, 0.4, 0.6, 0.8)
 
 p1 <- ggplot(both %>% filter(ef == "HFmrEF"), aes(x = or, y = order, color = cols)) +
   # Add a reference dashed line at 1
@@ -112,7 +112,7 @@ p1 <- ggplot(both %>% filter(ef == "HFmrEF"), aes(x = or, y = order, color = col
     plot.margin = unit(c(0, 0, 0, 0), "mm"),
     panel.grid.major.y = element_line(colour = "grey94")
   ) +
-  scale_x_continuous(trans = "log", breaks = c(xmin, 1, xmax), limits = c(xmin, xmax)) +
+  scale_x_continuous(trans = "log", breaks = xbreaks, limits = c(min(xbreaks), max(xbreaks))) +
   scale_y_discrete(breaks = both %>% filter(ef == "HFmrEF") %>% pull(ordergrid))
 
 t1 <- ggplot(both %>% filter(ef == "HFmrEF")) +
@@ -149,7 +149,7 @@ p2 <- ggplot(both %>% filter(ef == "HFrEF"), aes(x = or, y = order, color = cols
     plot.margin = unit(c(0, 0, 0, 0), "mm"),
     panel.grid.major.y = element_line(colour = "grey94")
   ) +
-  scale_x_continuous(trans = "log", breaks = c(xmin, 1, xmax), limits = c(xmin, xmax)) +
+  scale_x_continuous(trans = "log", breaks = xbreaks, limits = c(min(xbreaks), max(xbreaks))) +
   scale_y_discrete(breaks = both %>% filter(ef == "HFmrEF") %>% pull(ordergrid))
 
 t2 <- ggplot(both %>% filter(ef == "HFrEF")) +

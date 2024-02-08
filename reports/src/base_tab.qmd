@@ -259,13 +259,13 @@ basetabfunc(data = rsdata)
 ```
 
 ```{r}
-#| label: tbl-base-ref
+#| label: tbl-base-pef
 #| cache: true
 #| cache.comments: false
 #| dependson: basetabfunc
-#| tbl-cap: "Baseline characteristics - HFrEF"
+#| tbl-cap: "Baseline characteristics - HFpEF"
 
-basetabfunc(data = rsdata %>% filter(shf_ef_cat == "HFrEF"), novar = "shf_ef_cat")
+basetabfunc(data = rsdata %>% filter(shf_ef_cat == "HFpEF"), novar = "shf_ef_cat")
 ```
 
 ```{r}
@@ -279,11 +279,11 @@ basetabfunc(data = rsdata %>% filter(shf_ef_cat == "HFmrEF"), novar = "shf_ef_ca
 ```
 
 ```{r}
-#| label: tbl-base-pef
+#| label: tbl-base-ref
 #| cache: true
 #| cache.comments: false
 #| dependson: basetabfunc
-#| tbl-cap: "Baseline characteristics - HFpEF"
+#| tbl-cap: "Baseline characteristics - HFrEF"
 
-basetabfunc(data = rsdata %>% filter(shf_ef_cat == "HFpEF"), novar = "shf_ef_cat")
+basetabfunc(data = rsdata %>% filter(shf_ef_cat == "HFrEF"), novar = "shf_ef_cat")
 ```

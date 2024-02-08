@@ -74,7 +74,6 @@ tabvars <- c(
 tabvars_not_in_mod <- c(
   "shf_age",
   "shf_nyha",
-  "shf_ef_cat",
   "shf_revasc",
   "shf_bpsys",
   "shf_bpdia",
@@ -94,11 +93,11 @@ tabvars_not_in_mod <- c(
 
 modvars <- tabvars[!(tabvars %in% tabvars_not_in_mod)]
 
-stratavars <- c("shf_location")
+stratavars <- c("shf_location", "shf_age_cat")
 
 outvars <- tibble(
   var = c("sos_out_deathhosphf", "sos_out_death", "sos_out_hosphf"),
-  time = c("sos_outtime_death", "sos_outtime_death", "sos_outtime_hosphf"),
+  time = c("sos_outtime_hosphf", "sos_outtime_death", "sos_outtime_hosphf"),
   shortname = c("Death/1st HFH", "Death", "1st HFH"),
   name = c("Composite All-cause death or First HF hospitalization", "All-cause death", "First HF hospitalization"),
   composite = c(T, F, F),

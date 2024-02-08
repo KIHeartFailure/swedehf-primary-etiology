@@ -1,6 +1,6 @@
 # Inclusion/exclusion criteria --------------------------------------------------------
 
-flow <- flow[1:10, 1:2]
+flow <- flow[c(1:8, 10), 1:2]
 
 names(flow) <- c("Criteria", "N")
 

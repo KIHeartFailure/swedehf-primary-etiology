@@ -1,6 +1,5 @@
 ---
 title: "Statistical report: Etiology of heart failure across the ejection fraction spectrum and association with prognosis: an analysis from the Swedish Heart Failure Registry"
-subtitle: Draft
 date: "`r Sys.Date()`"
 cover: static/ki_logo_vert_rgb.png
 editor: source
@@ -137,8 +136,8 @@ comparisons were made and therefore the results should be viewed with care.
 ## Missing data
 
 Missing data was imputed with multiple imputation (n = 10) using mice [@mice] and Rubin’s rules was used for combining estimates and standard errors across imputed data sets. 
-Variables included in the model are indicated in @tbl-base. 
-The primary outcome was included as the Nelson-Aalen estimator.
+Variables included in the model are indicated in @tbl-base. Primary etiology was not included in the model. 
+The primary outcome, `r outvars %>% filter(primary) %>% pull(name)`, was included as the Nelson-Aalen estimator.
 
 ## Baseline characteristics
 
@@ -150,19 +149,15 @@ differences between groups with the Kruskal-Wallis test.
 
 Separate analyses were further performed for the respective EF groups. 
 
-Note to self: Om inte ska presentera estimat från andra variabler, inkludera som kontinuerliga med splines. 
-
 ## Associations between primary etiology and EF
 
 The association between primary etiology and EF (EF as dependent variable) was evaluated using a multivariable multinominal regression 
 including the variables indicated in @tbl-base. The variables were selected based on clinical relevance. 
 
-FRÅGA: Fundera på om verkligen ska ha Other som referens. Detta är en slaskgrupp. Bättre att ha en väldefinerad entitet som ref i både cox och denna? 
-
 ### Assumptions
 
 Possible outliers were evaluated using Cook's distance and multicollinearity was 
-evaluated using the Variance Inflation Factor (VIF). TO BE CHECKED
+evaluated using the Variance Inflation Factor (VIF). 
 
 ## Association between outcomes and primary etiology across EF
 
@@ -174,22 +169,19 @@ The following outcomes are considered:
 
 Time to first events were presented with cumulative incidence curves by primary etiology separately for the respective EF groups. 
 
-Crude and adjusted analyses were performed where adjustment was performed for 
-variables indicated in @tbl-base. 
+Crude and adjusted Cox proportional hazards regressions were used to model the time to first 
+event including primary etiology, EF and the interaction between the two thereby rendering 
+the interpretation of the association between primary etiology and outcomes in EF subgroups 
+and at the same time testing for differences in the association between EF groups. 
+Adjustment was performed for variables indicated in @tbl-base. 
 
-Cox proportional hazards regressions were used to model the time to first event. 
-As a consistency analysis for HFH, a sub-distributional hazards model[@fg] was used, 
-where death was treated as a competing event.
-
-Data were censored at 2021-12-31 or emigration from Sweden. In the Cox proportional hazard regression for HFH censoring was also performed at death. 
-
-Separate analyses were further performed for the respective EF groups. 
+Data were censored at 2021-12-31, emigration from Sweden or, for HFH, at death. 
 
 ### Assumptions
 
 The proportional hazards assumption was investigated using the scaled Schoenfeld 
-residuals for the primary outcome leading to that `r paste0(stratavars, collapse = ", ")` was stratified for in the models. 
-Possible outliers were visually inspected by plotting the dfbetas. TO BE CHECKED.
+residuals leading to that `r paste0(stratavars, collapse = ", ")` were stratified for in the models. 
+Possible outliers were visually inspected by plotting the dfbetas. 
 
 # Results
 
@@ -222,7 +214,7 @@ The median (q1-q3) age is `r med` and `r percfem`% females.
 
 {{< include src/predictors.qmd >}}
 
-\blandscape
+\clearpage
 
 ## Association between outcomes and primary etiology across EF
 
@@ -245,8 +237,6 @@ The median (min-max) follow-up is
 `r medsurv` years for a total of `r sumsurv` patient-years of follow-up.
 
 {{< include src/outcomes.qmd >}}
-
-\elandscape
 
 {{< include src/km_figs.qmd >}}
 

@@ -2,7 +2,7 @@
 #| label: tbl-vars
 #| cache: true
 #| cache.comments: false
-#| tbl-cap: "Variable definitions and data source"
+#| tbl-cap: "Variable definitions and data sources"
 
 vars <- bind_rows(
   tibble(var = c("shf_primaryetiology_cat", tabvars)),
@@ -30,19 +30,18 @@ vars <- left_join(vars,
 )
 
 # meta data
-meta <- bind_rows(
+vars <- left_join(vars,
   outcommeta,
-  deathmeta
+  by = c("var_tmp" = "Variable")
 )
-
-vars <- left_join(vars, meta, by = c("var_tmp" = "Variable"))
 
 vars <- vars %>%
   mutate(
     Variable = coalesce(name, label, var_tmp),
     # small fixes
     Variable = str_replace_all(Variable, fixed("Disposable income (100 SEK)"), "Income"),
-    Variable = str_replace_all(Variable, fixed("First HF hospitalization"), "HF hospitalization")
+    Variable = str_replace_all(Variable, fixed("First HF hospitalization"), "HF hospitalization"),
+    Code = if_else(Variable == "HF hospitalization", str_remove(Code, "\\,4[^.]*$"), Code)
   )
 
 vars <- vars %>%
@@ -53,7 +52,7 @@ vars <- vars %>%
     Code = str_replace_all(Code, "ICD", "ICD-10"),
     Code = case_when(
       is.na(Register) ~ Code,
-      Period == "0-" | str_detect(Code, "428") ~ str_replace_all(Code, "ICD-10", "ICD-9/10"),
+      Period == "0-" ~ str_replace_all(Code, "ICD-10", "ICD-9/10"),
       TRUE ~ Code
     ),
     Code = str_replace_all(Code, ":", " "),
