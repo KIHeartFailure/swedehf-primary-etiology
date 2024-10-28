@@ -74,9 +74,9 @@ entered into an electronic database managed by the Uppsala Clinical Research
 Center (Uppsala, Sweden). Up to April 2017 the only inclusion criterion was a 
 clinical diagnosis of HF, which was thereafter defined according to the ICD-10 
 codes I50.0, I50.1, I50.9, I42.0, I42.6, I42.7, I25.5, I11.0, I13.0, I13.2. 
-In 2021, 69 of 76 Swedish hospitals enrolled patients in SwedeHF, which had a 32% coverage of the prevalent HF population in Sweden[@annualreport]. 
+In 2023, 69 of 76 Swedish hospitals enrolled patients in SwedeHF, which had a 59% coverage of the prevalent HF population in Sweden[@annualreport]. 
 
-SwedeHF was linked with national Swedish registries (SHFDB v 4.1.2) through the 
+SwedeHF was linked with national Swedish registries (SHFDB v 4.2.1) through the 
 Swedish personal identity number (PIN)[@pin]: 
 
 - The National Patient Register (The National Board of Health and Welfare) for 
@@ -107,7 +107,8 @@ default_kable(flow) %>%
   row_spec(c(1, 11), bold = T)
 ```
 
-First patient in: `r min(rsdata$shf_indexdtm)` and last patient in: `r max(rsdata$shf_indexdtm)`.  
+First patient in: `r min(rsdata$shf_indexdtm)` and last patient in: `r max(rsdata$shf_indexdtm)` 
+from approximately `r rsdata %>% distinct(shf_centre) %>% count() %>% pull(n)` enrolling centers. 
 
 ## Definitions
 
@@ -120,10 +121,15 @@ Information on data sources, definitions etc. are found https://kiheartfailure.g
 In the SwedeHF CRF primary etiology is recorded in the following categories: 
 DCM, Heart valve disease, Hypertension, IHD, Known alcoholic cardiomyopathy, Other. 
 For this project DCM, Known alcoholic cardiomyopathy and Other were categorized as Other. 
+Baseline characteristics and trends over time are however presetned for the original 6 categories. 
 
 ### EF
 
 EF subgroups are defined as HFrEF (LVEF <40%), HFrEF (LVEF 40-49%) and HFpEF (LVEF $\geq$ 50%).
+
+### Sex
+
+All analyses were performed overall and also in men and women separately.
 
 # Statistical analysis 
 
@@ -147,7 +153,7 @@ differences between groups with the chi-square test.
 Continuous variables are presented with median [first quartile-third quartile] and tested for 
 differences between groups with the Kruskal-Wallis test. 
 
-Separate analyses were further performed for the respective EF groups. 
+Separate analyses were further performed for the respective EF groups and by sex. 
 
 ## Associations between primary etiology and EF
 
@@ -175,7 +181,7 @@ the interpretation of the association between primary etiology and outcomes in E
 and at the same time testing for differences in the association between EF groups. 
 Adjustment was performed for variables indicated in @tbl-base. 
 
-Data were censored at 2021-12-31, emigration from Sweden or, for HFH, at death. 
+Data were censored at 2023-12-31, emigration from Sweden or, for HFH, at death. 
 
 ### Assumptions
 
@@ -204,11 +210,19 @@ percfem <- rsdata %>%
 
 The median (q1-q3) age is `r med` and `r percfem`% females.    
 
+## Trends over time
+
+{{< include src/trends.qmd >}}
+
+\clearpage
+
 ## Baseline characteristics
 
 {{< include src/base_tab.qmd >}}
 
 {{< include src/pie_figs.qmd >}}
+
+\clearpage
 
 ## Associations between primary etiology and EF
 

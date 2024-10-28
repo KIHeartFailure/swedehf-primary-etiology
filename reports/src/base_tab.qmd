@@ -128,23 +128,23 @@ basetabfunc_inner <- function(x, data, stratavar, catdig, contdig) {
 contdig <- tibble(vars = c("shf_potassium"), contdig = 1)
 catdig <- 0
 
-basetabfunc <- function(data, novars = NULL) {
+basetabfunc <- function(data, x = "shf_primaryetiology_cat", novars = NULL) {
   tab <- data %>%
-    count(shf_primaryetiology_cat, .drop = F) %>%
+    count(!!sym(x), .drop = F) %>%
     mutate(n = paste0(n, " (", fn(n / sum(n) * 100, catdig), ")")) %>%
-    pivot_wider(names_from = shf_primaryetiology_cat, values_from = n) %>%
+    pivot_wider(names_from = !!sym(x), values_from = n) %>%
     mutate(
       var = "N (%)",
       level = NA,
       p = NA,
       pmis = NA
     ) %>%
-    select(var, level, pmis, levels(rsdata %>% pull(shf_primaryetiology_cat)), p)
+    select(var, level, pmis, levels(rsdata %>% pull(!!sym(x))), p)
 
   tabvars2 <- setdiff(tabvars, novars)
   tabtmp <- sapply(tabvars2,
     FUN = basetabfunc_inner, data = data,
-    stratavar = "shf_primaryetiology_cat", catdig = catdig, contdig = contdig
+    stratavar = x, catdig = catdig, contdig = contdig
   )
 
   tabtmp <- bind_rows(tabtmp)
@@ -185,7 +185,7 @@ basetabfunc <- function(data, novars = NULL) {
     ) %>%
     unite(footnote, starts_with("footnote"), sep = "")
 
-  cn <- c("Variable", c("Missing (%)", levels(data %>% pull(shf_primaryetiology_cat)), "p-value"))
+  cn <- c("Variable", c("Missing (%)", levels(data %>% pull(!!sym(x))), "p-value"))
 
   footnotetext <- c(
     "Included in multiple imputation and regression models.",
@@ -228,14 +228,22 @@ basetabfunc <- function(data, novars = NULL) {
 
   cn <- sanitize_text(cn)
 
+  if (x == "shf_primaryetiology_cat") {
+    ncol <- 4
+    tsize <- 7
+  } else {
+    ncol <- 6
+    tsize <- 6
+  }
+
   default_kable(tab,
-    font_size = 7,
+    font_size = tsize,
     longtable = TRUE,
     escape = FALSE,
     col.names = cn
   ) %>%
     add_indent(indent_rows) %>%
-    add_header_above(c(" " = 1, " " = 1, "Primary etiology" = 4, " " = 1)) %>%
+    add_header_above(c(" " = 1, " " = 1, "Primary etiology" = ncol, " " = 1)) %>%
     footnote(
       footnote_order = c("general", "symbol", "alphabet"),
       general_title = "",
@@ -254,6 +262,7 @@ basetabfunc <- function(data, novars = NULL) {
 #| cache.comments: false
 #| dependson: basetabfunc
 #| tbl-cap: "Baseline characteristics"
+#| tbl-pos: "H"
 
 basetabfunc(data = rsdata)
 ```
@@ -264,6 +273,7 @@ basetabfunc(data = rsdata)
 #| cache.comments: false
 #| dependson: basetabfunc
 #| tbl-cap: "Baseline characteristics - HFpEF"
+#| tbl-pos: "H"
 
 basetabfunc(data = rsdata %>% filter(shf_ef_cat == "HFpEF"), novar = "shf_ef_cat")
 ```
@@ -274,6 +284,7 @@ basetabfunc(data = rsdata %>% filter(shf_ef_cat == "HFpEF"), novar = "shf_ef_cat
 #| cache.comments: false
 #| dependson: basetabfunc
 #| tbl-cap: "Baseline characteristics - HFmrEF"
+#| tbl-pos: "H"
 
 basetabfunc(data = rsdata %>% filter(shf_ef_cat == "HFmrEF"), novar = "shf_ef_cat")
 ```
@@ -284,6 +295,44 @@ basetabfunc(data = rsdata %>% filter(shf_ef_cat == "HFmrEF"), novar = "shf_ef_ca
 #| cache.comments: false
 #| dependson: basetabfunc
 #| tbl-cap: "Baseline characteristics - HFrEF"
+#| tbl-pos: "H"
 
 basetabfunc(data = rsdata %>% filter(shf_ef_cat == "HFrEF"), novar = "shf_ef_cat")
 ```
+
+```{r}
+#| label: tbl-base-female
+#| cache: true
+#| cache.comments: false
+#| dependson: basetabfunc
+#| tbl-cap: "Baseline characteristics - Female"
+#| tbl-pos: "H"
+
+basetabfunc(data = rsdata %>% filter(shf_sex == "Female"), novar = "shf_sex")
+```
+
+```{r}
+#| label: tbl-base-male
+#| cache: true
+#| cache.comments: false
+#| dependson: basetabfunc
+#| tbl-cap: "Baseline characteristics - Male"
+#| tbl-pos: "H"
+
+basetabfunc(data = rsdata %>% filter(shf_sex == "Male"), novar = "shf_sex")
+```
+
+\blandscape
+
+```{r}
+#| label: tbl-base-addetiology
+#| cache: true
+#| cache.comments: false
+#| dependson: basetabfunc
+#| tbl-cap: "Baseline characteristics - additonal etiologies"
+#| tbl-pos: "H"
+
+basetabfunc(data = rsdata, x = "shf_primaryetiology2")
+```
+
+\elandscape

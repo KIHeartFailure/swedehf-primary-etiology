@@ -1,14 +1,16 @@
 # Impute missing values ---------------------------------------------------
 
-# Nelson-Aalen estimator
-na <- basehaz(coxph(Surv(sos_outtime_hosphf, sos_out_deathhosphf == "Yes") ~ 1,
-  data = rsdata, method = "breslow"
-))
-
-rsdatauseforimp <- left_join(rsdata, na, by = c("sos_outtime_death" = "time")) %>%
+rsdatauseforimp <- rsdata %>%
   select(lopnr, shf_indexdtm, contains(outvars$var), !!!syms(outvars$time), !!!syms(modvars), contains("shf_primaryetiology_cat"), shf_ef_cat)
 
 noimpvars <- names(rsdatauseforimp)[!names(rsdatauseforimp) %in% modvars]
+
+# Nelson-Aalen estimator
+na <- basehaz(coxph(Surv(sos_outtime_hosphf, sos_out_deathhosphf == "Yes") ~ 1,
+  data = rsdatauseforimp, method = "breslow"
+))
+
+rsdatauseforimp <- left_join(rsdatauseforimp, na, by = c("sos_outtime_hosphf" = "time"))
 
 ini <- mice(rsdatauseforimp, maxit = 0, print = F)
 
@@ -62,3 +64,6 @@ for (i in seq_along(modvars)) {
 for (i in seq_along(modvars)) {
   if (any(is.na(datacheck[, modvars[i]]))) print(paste0("Missing for ", modvars[i]))
 }
+
+imprsdatafemale <- mice::filter(imprsdata, rsdata$shf_sex == "Female")
+imprsdatamale <- mice::filter(imprsdata, rsdata$shf_sex == "Male")

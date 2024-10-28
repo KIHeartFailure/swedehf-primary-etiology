@@ -6,11 +6,19 @@ rsdata <- rsdata %>%
       shf_primaryetiology == "Hypertension" ~ 3,
       TRUE ~ 4
     ), levels = 1:4, labels = c("Ishemic", "Valvular", "Hypertensive", "Other")),
+    shf_primaryetiology2 = factor(case_when(
+      shf_primaryetiology == "IHD" ~ 1,
+      shf_primaryetiology == "Heart valve disease" ~ 2,
+      shf_primaryetiology == "Hypertension" ~ 3,
+      shf_primaryetiology == "DCM" ~ 4,
+      shf_primaryetiology == "Known alcoholic cardiomyopathy" ~ 5,
+      TRUE ~ 6
+    ), levels = 1:6, labels = c("Ishemic", "Valvular", "Hypertensive", "DCM", "Alcoholic cardiomyopathy", "Other")),
     shf_ef_cat = factor(shf_ef_cat, levels = c("HFpEF", "HFmrEF", "HFrEF")),
     shf_indexyear_cat = factor(case_when(
       shf_indexyear <= 2015 ~ "2010-2015",
-      shf_indexyear <= 2018 ~ "2016-2018",
-      shf_indexyear <= 2021 ~ "2019-2021"
+      shf_indexyear <= 2020 ~ "2016-2020",
+      shf_indexyear <= 2023 ~ "2021-2023"
     ))
   )
 

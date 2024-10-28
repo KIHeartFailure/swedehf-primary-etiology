@@ -3,106 +3,115 @@
 #| cache: true
 #| cache.comments: false
 
-coxvars <- setdiff(modvars, "shf_ef_cat")
-coxvars[coxvars %in% stratavars] <- paste0("strata(", coxvars[coxvars %in% stratavars], ")")
+outcomesfunc <- function(data, impdata, novars = NULL) {
+  coxvars <- setdiff(modvars, "shf_ef_cat")
+  coxvars <- setdiff(coxvars, novars)
+  coxvars[coxvars %in% stratavars] <- paste0("strata(", coxvars[coxvars %in% stratavars], ")")
 
-levs <- levels(rsdata %>% pull(shf_primaryetiology_cat))
-nlevs <- length(levs)
+  levs <- levels(rsdata %>% pull(shf_primaryetiology_cat))
+  nlevs <- length(levs)
 
-levsef <- levels(rsdata %>% pull(shf_ef_cat))
-nlevsef <- length(levsef)
+  levsef <- levels(data %>% pull(shf_ef_cat))
+  nlevsef <- length(levsef)
 
-outcomesfunc <- function(time = NULL, event = NULL, eventname) {
-  out <- data.frame(matrix(NA, ncol = 8, nrow = nlevsef * nlevs + 1))
-  colnames(out) <- c("Outcome", "EF", "etiology", "inc", "hrcicrude", "pintcrude", "hrciadj", "pintadj")
+  outcomesfunc_inner <- function(data, impdata, time = NULL, event = NULL, eventname) {
+    out <- data.frame(matrix(NA, ncol = 8, nrow = nlevsef * nlevs + 1))
+    colnames(out) <- c("Outcome", "EF", "etiology", "inc", "hrcicrude", "pintcrude", "hrciadj", "pintadj")
 
-  out[, 1] <- eventname
-  out[, 2] <- c(NA, rep(levsef, each = nlevs))
-  out[, 3] <- c(NA, rep(levs, times = nlevsef))
+    out[, 1] <- eventname
+    out[, 2] <- c(NA, rep(levsef, each = nlevs))
+    out[, 3] <- c(NA, rep(levs, times = nlevsef))
 
-  ## incidence rate
-  ev <- rsdata %>%
-    group_by(shf_ef_cat, shf_primaryetiology_cat) %>%
-    summarise(
-      ev = sum(!!sym(event) == "Yes"),
-      s = sum(!!sym(time) / 365.25),
-      .groups = "drop"
-    )
-  r <- pois.exact(x = ev$ev, pt = ev$s / 100)
-
-  out[2:nrow(out), 4] <- paste0(
-    ev$ev, ", ",
-    fn(ev$s, dig = 0), ", ",
-    fn(r$rate, dig = 0), " (",
-    fn(r$lower, dig = 0), "-",
-    fn(r$upper, dig = 0), ")"
-  )
-
-  for (i in seq_along(levsef)) {
-    ## crude regression
-    mod <- summary(modraw <- coxph(formula(paste0("Surv(", time, ",", event, "== 'Yes') ~ shf_primaryetiology_cat * relevel(shf_ef_cat, ref = '", levsef[i], "')")),
-      data = rsdata
-    ))
-
-    out[(nlevs * (i - 1) + 2):(nlevs * i + 1), 5] <- c(
-      "reference",
-      paste0(
-        fn(mod$conf.int[1:(nlevs - 1), "exp(coef)"], dig = 2),
-        " (", fn(mod$conf.int[1:(nlevs - 1), "lower .95"], dig = 2),
-        "-", fn(mod$conf.int[1:(nlevs - 1), "upper .95"], dig = 2), "), ",
-        fn(mod$coef[1:(nlevs - 1), "Pr(>|z|)"], dig = 3, p = TRUE)
+    ## incidence rate
+    ev <- data %>%
+      group_by(shf_ef_cat, shf_primaryetiology_cat) %>%
+      summarise(
+        ev = sum(!!sym(event) == "Yes"),
+        s = sum(!!sym(time) / 365.25),
+        .groups = "drop"
       )
+    r <- pois.exact(x = ev$ev, pt = ev$s / 100)
+
+    out[2:nrow(out), 4] <- paste0(
+      ev$ev, ", ",
+      fn(ev$s, dig = 0), ", ",
+      fn(r$rate, dig = 0), " (",
+      fn(r$lower, dig = 0), "-",
+      fn(r$upper, dig = 0), ")"
     )
 
-    if (i == 1) {
-      pint <- car::Anova(modraw, type = 3)
-      out[1, 6] <- fn(last(pint$`Pr(>Chisq)`), dig = 3, p = T)
-    }
+    for (i in seq_along(levsef)) {
+      ## crude regression
+      mod <- summary(modraw <- coxph(formula(paste0("Surv(", time, ",", event, "== 'Yes') ~ shf_primaryetiology_cat * relevel(shf_ef_cat, ref = '", levsef[i], "')")),
+        data = data
+      ))
 
-    ## adjusted regression
-    modraw <- with(imprsdata, coxph(formula(paste0(
-      "Surv(", time, ",", event, " == 'Yes') ~ shf_primaryetiology_cat * relevel(shf_ef_cat, ref = '", levsef[i], "') + ", paste(coxvars, collapse = " + ")
-    ))))
-
-    mod <- summary(pool(modraw))
-
-    out[(nlevs * (i - 1) + 2):(nlevs * i + 1), 7] <- c(
-      "reference",
-      paste0(
-        fn(exp(mod$estimate[1:(nlevs - 1)]), dig = 2),
-        " (", fn(exp(mod$estimate[1:(nlevs - 1)] - global_z05 * mod$std.error[1:(nlevs - 1)]), dig = 2),
-        "-", fn(exp(mod$estimate[1:(nlevs - 1)] + global_z05 * mod$std.error[1:(nlevs - 1)]), dig = 2), "), ",
-        fn(mod$p.value[1:(nlevs - 1)], dig = 3, p = TRUE)
+      out[(nlevs * (i - 1) + 2):(nlevs * i + 1), 5] <- c(
+        "reference",
+        paste0(
+          fn(mod$conf.int[1:(nlevs - 1), "exp(coef)"], dig = 2),
+          " (", fn(mod$conf.int[1:(nlevs - 1), "lower .95"], dig = 2),
+          "-", fn(mod$conf.int[1:(nlevs - 1), "upper .95"], dig = 2), "), ",
+          fn(mod$coef[1:(nlevs - 1), "Pr(>|z|)"], dig = 3, p = TRUE)
+        )
       )
-    )
 
-    if (i == 1) {
-      mod_noint <- with(imprsdata, coxph(formula(paste0(
-        "Surv(", time, ",", event, " == 'Yes') ~ shf_primaryetiology_cat + relevel(shf_ef_cat, ref = '", levsef[i], "') + ", paste(coxvars, collapse = " + ")
+      if (i == 1) {
+        pint <- car::Anova(modraw, type = 3)
+        out[1, 6] <- fn(last(pint$`Pr(>Chisq)`), dig = 3, p = T)
+      }
+
+      ## adjusted regression
+      modraw <- with(impdata, coxph(formula(paste0(
+        "Surv(", time, ",", event, " == 'Yes') ~ shf_primaryetiology_cat * relevel(shf_ef_cat, ref = '", levsef[i], "') + ", paste(coxvars, collapse = " + ")
       ))))
-      pint <- mice::D1(modraw, mod_noint)
-      out[1, 8] <- fn(pint$result[, "P(>F)"], p = T, dig = 3)
-    }
-  }
-  return(out)
-}
 
-out1 <- outcomesfunc(
-  time = outvars$time[1],
-  event = outvars$var[1],
-  eventname = outvars$name[1]
-)
-out2 <- outcomesfunc(
-  time = outvars$time[2],
-  event = outvars$var[2],
-  eventname = outvars$name[2]
-)
-out3 <- outcomesfunc(
-  time = outvars$time[3],
-  event = outvars$var[3],
-  eventname = outvars$name[3]
-)
-outall <- rbind(out1, out2, out3)
+      mod <- summary(pool(modraw))
+
+      out[(nlevs * (i - 1) + 2):(nlevs * i + 1), 7] <- c(
+        "reference",
+        paste0(
+          fn(exp(mod$estimate[1:(nlevs - 1)]), dig = 2),
+          " (", fn(exp(mod$estimate[1:(nlevs - 1)] - global_z05 * mod$std.error[1:(nlevs - 1)]), dig = 2),
+          "-", fn(exp(mod$estimate[1:(nlevs - 1)] + global_z05 * mod$std.error[1:(nlevs - 1)]), dig = 2), "), ",
+          fn(mod$p.value[1:(nlevs - 1)], dig = 3, p = TRUE)
+        )
+      )
+
+      if (i == 1) {
+        mod_noint <- with(impdata, coxph(formula(paste0(
+          "Surv(", time, ",", event, " == 'Yes') ~ shf_primaryetiology_cat + relevel(shf_ef_cat, ref = '", levsef[i], "') + ", paste(coxvars, collapse = " + ")
+        ))))
+        pint <- mice::D1(modraw, mod_noint)
+        out[1, 8] <- fn(pint$result[, "P(>F)"], p = T, dig = 3)
+      }
+    }
+    return(out)
+  }
+
+  out1 <- outcomesfunc_inner(
+    data = data,
+    impdata = impdata,
+    time = outvars$time[1],
+    event = outvars$var[1],
+    eventname = outvars$name[1]
+  )
+  out2 <- outcomesfunc_inner(
+    data = data,
+    impdata = impdata,
+    time = outvars$time[2],
+    event = outvars$var[2],
+    eventname = outvars$name[2]
+  )
+  out3 <- outcomesfunc_inner(
+    data = data,
+    impdata = impdata,
+    time = outvars$time[3],
+    event = outvars$var[3],
+    eventname = outvars$name[3]
+  )
+  outall <- rbind(out1, out2, out3)
+}
 ```
 
 ```{r}
@@ -111,6 +120,9 @@ outall <- rbind(out1, out2, out3)
 #| cache.comments: false
 #| dependson: outcomesfunc
 #| tbl-cap: "Association between outcomes and primary etiology across EF"
+#| tbl-pos: "H"
+
+outall <- outcomesfunc(data = rsdata, impdata = imprsdata)
 
 outallprint <- outall %>%
   mutate(
@@ -123,6 +135,58 @@ colnames(outallprint) <- c("Outcome", "EF", "Etiology", "No events, sum py, even
 make_one_xlsxsheet(outallprint)
 
 default_kable(outallprint) %>%
+  add_header_above(c(" " = 1, " " = 1, " " = 1, " " = 1, "Crude" = 2, "Adjusted" = 2)) %>%
+  column_spec(c(1, 4), width = "5cm") %>%
+  column_spec(c(6, 8), width = "2cm")
+```
+
+```{r}
+#| label: tbl-outcomes-female
+#| cache: true
+#| cache.comments: false
+#| dependson: outcomesfunc
+#| tbl-cap: "Association between outcomes and primary etiology across EF - Female"
+#| tbl-pos: "H"
+
+outall_female <- outcomesfunc(data = rsdata %>% filter(shf_sex == "Female"), impdata = imprsdatafemale, novars = "shf_sex")
+
+outallprint_female <- outall_female %>%
+  mutate(
+    Outcome = if_else(is.na(EF), Outcome, NA),
+    EF = if_else(etiology == "Ishemic", EF, NA)
+  )
+
+colnames(outallprint_female) <- c("Outcome", "EF", "Etiology", "No events, sum py, events/100py (95% CI)", rep(c("Hazard Ratio (95% CI), p-value", "p-value interaction"), 2))
+
+make_one_xlsxsheet(outallprint_female)
+
+default_kable(outallprint_female) %>%
+  add_header_above(c(" " = 1, " " = 1, " " = 1, " " = 1, "Crude" = 2, "Adjusted" = 2)) %>%
+  column_spec(c(1, 4), width = "5cm") %>%
+  column_spec(c(6, 8), width = "2cm")
+```
+
+```{r}
+#| label: tbl-outcomes-male
+#| cache: true
+#| cache.comments: false
+#| dependson: outcomesfunc
+#| tbl-cap: "Association between outcomes and primary etiology across EF - Male"
+#| tbl-pos: "H"
+
+outall_male <- outcomesfunc(data = rsdata %>% filter(shf_sex == "Male"), impdata = imprsdatamale, novars = "shf_sex")
+
+outallprint_male <- outall_male %>%
+  mutate(
+    Outcome = if_else(is.na(EF), Outcome, NA),
+    EF = if_else(etiology == "Ishemic", EF, NA)
+  )
+
+colnames(outallprint_male) <- c("Outcome", "EF", "Etiology", "No events, sum py, events/100py (95% CI)", rep(c("Hazard Ratio (95% CI), p-value", "p-value interaction"), 2))
+
+make_one_xlsxsheet(outallprint_male)
+
+default_kable(outallprint_male) %>%
   add_header_above(c(" " = 1, " " = 1, " " = 1, " " = 1, "Crude" = 2, "Adjusted" = 2)) %>%
   column_spec(c(1, 4), width = "5cm") %>%
   column_spec(c(6, 8), width = "2cm")

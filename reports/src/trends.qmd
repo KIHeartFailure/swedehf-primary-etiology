@@ -1,0 +1,97 @@
+```{r}
+#| label: trendfunc
+#| cache: true
+#| cache.comments: false
+#| output: false
+
+trendfunc <- function(data, x = "shf_primaryetiology2") {
+  figdata <- data %>%
+    group_by(shf_indexyear, .drop = F) %>%
+    count(!!sym(x), .drop = F) %>%
+    mutate(per = n / sum(n) * 100) %>%
+    ungroup()
+
+  p <- ggplot(figdata, aes(x = shf_indexyear, y = per, group = !!sym(x))) +
+    geom_line(aes(col = !!sym(x)), linewidth = 1.5) +
+    geom_point(aes(col = !!sym(x)), size = 3.5) +
+    scale_colour_manual(
+      values = global_cols,
+      guide = guide_legend(order = 1),
+      drop = FALSE
+    ) +
+    theme_classic() +
+    theme(
+      text = element_text(size = 22),
+      legend.position = "bottom",
+      legend.box = "vertical",
+      legend.title = element_blank(),
+      panel.grid.major.y = element_line(
+        color = global_gridcolor,
+        linewidth = 0.5,
+        linetype = 1
+      )
+    ) +
+    labs(y = "Proportion (%)", x = "Year") +
+    scale_y_continuous(limits = c(0, 60)) +
+    scale_x_continuous(breaks = 2010:2023, guide = guide_axis(n.dodge = 2))
+  create_pptx(p)
+  p
+}
+```
+
+```{r}
+#| label: fig-trend
+#| cache: true
+#| cache.comments: false
+#| dependson: trendfunc
+#| fig-cap: "Trends over time"
+#| fig-subcap: !expr c("HFpEF", "HFmrEF", "HFrEF")
+#| layout-ncol: 2
+#| layout-nrow: 2
+#| fig-width: 10
+#| fig-height: 6
+
+trendfunc(rsdata %>% filter(shf_ef_cat == "HFpEF"))
+
+trendfunc(rsdata %>% filter(shf_ef_cat == "HFmrEF"))
+
+trendfunc(rsdata %>% filter(shf_ef_cat == "HFrEF"))
+```
+
+```{r}
+#| label: fig-trend-female
+#| cache: true
+#| cache.comments: false
+#| dependson: trendfunc
+#| fig-cap: "Trends over time - Female"
+#| fig-subcap: !expr c("HFpEF", "HFmrEF", "HFrEF")
+#| layout-ncol: 2
+#| layout-nrow: 2
+#| fig-width: 10
+#| fig-height: 6
+
+trendfunc(rsdata %>% filter(shf_ef_cat == "HFpEF" & shf_sex == "Female"))
+
+trendfunc(rsdata %>% filter(shf_ef_cat == "HFmrEF" & shf_sex == "Female"))
+
+trendfunc(rsdata %>% filter(shf_ef_cat == "HFrEF" & shf_sex == "Female"))
+```
+
+```{r}
+#| label: fig-trend-male
+#| cache: true
+#| cache.comments: false
+#| dependson: trendfunc
+#| fig-cap: "Trends over time - Male"
+#| fig-subcap: !expr c("HFpEF", "HFmrEF", "HFrEF")
+#| layout-ncol: 2
+#| layout-nrow: 2
+#| fig-width: 10
+#| fig-height: 6
+
+trendfunc(rsdata %>% filter(shf_ef_cat == "HFpEF" & shf_sex == "Male"))
+
+trendfunc(rsdata %>% filter(shf_ef_cat == "HFmrEF" & shf_sex == "Male"))
+
+trendfunc(rsdata %>% filter(shf_ef_cat == "HFrEF" & shf_sex == "Male"))
+```

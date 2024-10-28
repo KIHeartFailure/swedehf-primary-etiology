@@ -6,22 +6,22 @@
 
 end_followup <- 10
 
-kmfunc <- function(efcat, time, event, eventname) {
+kmfunc <- function(efcat, sexcat = c("Female", "Male"), time, event, eventname, coxest = outall) {
   levs <- levels(rsdata %>% pull(shf_primaryetiology_cat))
   nlevs <- length(levs)
 
   cox_crude <- c(
     "Crude HR (95% CI)",
-    gsub("\\,.*", "", outall %>% filter(EF == efcat & Outcome == outvars$name[nr]) %>% pull(hrcicrude))
+    gsub("\\,.*", "", coxest %>% filter(EF == efcat & Outcome == outvars$name[nr]) %>% pull(hrcicrude))
   )
 
   cox_adj <- c(
     "Adjusted HR (95% CI)",
-    gsub("\\,.*", "", outall %>% filter(EF == efcat & Outcome == outvars$name[nr]) %>% pull(hrciadj))
+    gsub("\\,.*", "", coxest %>% filter(EF == efcat & Outcome == outvars$name[nr]) %>% pull(hrciadj))
   )
 
   fit <- survfit(formula(paste0("Surv(", time, ",", event, "== 'Yes') ~ shf_primaryetiology_cat")),
-    data = rsdata %>% filter(shf_ef_cat == efcat),
+    data = rsdata %>% filter(shf_ef_cat == efcat & shf_sex %in% sexcat),
   )
 
   s <- summary(fit, times = seq(0, end_followup * 365.25, 1), extend = T)
@@ -187,5 +187,239 @@ kmfunc(
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr]
+)
+```
+
+```{r}
+#| label: fig-cic-pef-female
+#| cache: true
+#| cache.comments: false
+#| dependson: kmfunc
+#| fig-cap: "Cumulative incidence - HFpEF - Female"
+#| fig-subcap: !expr outvars$name
+#| layout-ncol: 2
+#| layout-nrow: 2
+
+nr <- 1
+kmfunc(
+  efcat = "HFpEF",
+  sexcat = "Female", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_female
+)
+nr <- 2
+kmfunc(
+  efcat = "HFpEF",
+  sexcat = "Female", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_female
+)
+nr <- 3
+kmfunc(
+  efcat = "HFpEF",
+  sexcat = "Female", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_female
+)
+```
+
+```{r}
+#| label: fig-cic-mref-female
+#| cache: true
+#| cache.comments: false
+#| dependson: kmfunc
+#| fig-cap: "Cumulative incidence - HFmrEF - Female"
+#| fig-subcap: !expr outvars$name
+#| layout-ncol: 2
+#| layout-nrow: 2
+
+nr <- 1
+kmfunc(
+  efcat = "HFmrEF",
+  sexcat = "Female", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_female
+)
+nr <- 2
+kmfunc(
+  efcat = "HFmrEF",
+  sexcat = "Female", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_female
+)
+nr <- 3
+kmfunc(
+  efcat = "HFmrEF",
+  sexcat = "Female", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_female
+)
+```
+
+```{r}
+#| label: fig-cic-ref-female
+#| cache: true
+#| cache.comments: false
+#| dependson: kmfunc
+#| fig-cap: "Cumulative incidence - HFrEF - Female"
+#| fig-subcap: !expr outvars$name
+#| layout-ncol: 2
+#| layout-nrow: 2
+
+nr <- 1
+kmfunc(
+  efcat = "HFrEF",
+  sexcat = "Female", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_female
+)
+nr <- 2
+kmfunc(
+  efcat = "HFrEF",
+  sexcat = "Female", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_female
+)
+nr <- 3
+kmfunc(
+  efcat = "HFrEF",
+  sexcat = "Female", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_female
+)
+```
+
+```{r}
+#| label: fig-cic-pef-male
+#| cache: true
+#| cache.comments: false
+#| dependson: kmfunc
+#| fig-cap: "Cumulative incidence - HFpEF - Male"
+#| fig-subcap: !expr outvars$name
+#| layout-ncol: 2
+#| layout-nrow: 2
+
+nr <- 1
+kmfunc(
+  efcat = "HFpEF",
+  sexcat = "Male", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_male
+)
+nr <- 2
+kmfunc(
+  efcat = "HFpEF",
+  sexcat = "Male", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_male
+)
+nr <- 3
+kmfunc(
+  efcat = "HFpEF",
+  sexcat = "Male", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_male
+)
+```
+
+```{r}
+#| label: fig-cic-mref-male
+#| cache: true
+#| cache.comments: false
+#| dependson: kmfunc
+#| fig-cap: "Cumulative incidence - HFmrEF - Male"
+#| fig-subcap: !expr outvars$name
+#| layout-ncol: 2
+#| layout-nrow: 2
+
+nr <- 1
+kmfunc(
+  efcat = "HFmrEF",
+  sexcat = "Male", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_male
+)
+nr <- 2
+kmfunc(
+  efcat = "HFmrEF",
+  sexcat = "Male", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_male
+)
+nr <- 3
+kmfunc(
+  efcat = "HFmrEF",
+  sexcat = "Male", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_male
+)
+```
+
+```{r}
+#| label: fig-cic-ref-male
+#| cache: true
+#| cache.comments: false
+#| dependson: kmfunc
+#| fig-cap: "Cumulative incidence - HFrEF - Male"
+#| fig-subcap: !expr outvars$name
+#| layout-ncol: 2
+#| layout-nrow: 2
+
+nr <- 1
+kmfunc(
+  efcat = "HFrEF",
+  sexcat = "Male", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_male
+)
+nr <- 2
+kmfunc(
+  efcat = "HFrEF",
+  sexcat = "Male", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_male
+)
+nr <- 3
+kmfunc(
+  efcat = "HFrEF",
+  sexcat = "Male", 
+  time = outvars$time[nr],
+  event = outvars$var[nr],
+  eventname = outvars$shortname[nr],
+  coxest = outall_male
 )
 ```
