@@ -97,7 +97,7 @@ predictorsplotfunc <- function(plotdata) {
   # min(both$lci, na.rm = T)
   # max(both$uci, na.rm = T)
 
-  xbreaks <- c(0.2, 0.4, 0.6, 0.8)
+  xbreaks <- c(0.2, 0.3, 0.5, 0.9)
 
   p1 <- ggplot(plotdata %>% filter(ef == "HFmrEF"), aes(x = or, y = order, color = cols)) +
     # Add a reference dashed line at 1
