@@ -19,8 +19,19 @@ rsdata <- rsdata %>%
       shf_indexyear <= 2015 ~ "2010-2015",
       shf_indexyear <= 2020 ~ "2016-2020",
       shf_indexyear <= 2023 ~ "2021-2023"
-    ))
+    )),
+    shf_rasi = case_when(
+      is.na(shf_arb) | is.na(shf_acei) ~ NA_character_,
+      shf_arb == "Yes" | shf_acei == "Yes" ~ "Yes",
+      TRUE ~ "No"
+    )
+  ) %>%
+  mutate(
+    meds_hypertension = rowSums(across(c("shf_rasi", "shf_bbl", "shf_mra", "shf_diuretic", "sos_lm_ccb", "sos_lm_antiadrenerga")) == "Yes"),
+    meds_hf = rowSums(across(c("shf_rasiarni", "shf_bbl", "shf_mra")) == "Yes"),
+    meds_both = rowSums(across(c("shf_rasiarni", "shf_bbl", "shf_mra", "shf_diuretic", "sos_lm_ccb", "sos_lm_antiadrenerga")) == "Yes")
   )
+
 
 # income
 inc <- rsdata %>%

@@ -222,6 +222,8 @@ The median (q1-q3) age is `r med` and `r percfem`% females.
 
 {{< include src/pie_figs.qmd >}}
 
+{{< include src/efmeds.qmd >}}
+
 \clearpage
 
 ## Associations between primary etiology and EF

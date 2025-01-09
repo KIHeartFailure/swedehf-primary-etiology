@@ -1,0 +1,60 @@
+```{r}
+#| label: tbl-efmeds
+#| cache: true
+#| cache.comments: false
+#| tbl-cap: "Medications across EF"
+#| tbl-pos: "H"
+
+medfunc <- function(x, xname, xnr) {
+  tmp <- rsdata %>%
+    filter(!is.na(!!sym(x)))
+  out <- tmp %>%
+    group_by(shf_primaryetiology_cat, shf_ef_cat, .drop = F) %>%
+    reframe(
+      me = mean(!!sym(x), na.rm = T),
+      sd = sd(!!sym(x), na.rm = T),
+      n = n()
+    ) %>%
+    mutate(
+      out = paste0(fn(me, 2), " (", fn(sd, 2), ")"),
+      out = case_when(
+        n == 0 ~ "-",
+        n < 10 ~ "<10",
+        TRUE ~ out
+      )
+    ) %>%
+    ungroup() %>%
+    select(shf_primaryetiology_cat, shf_ef_cat, out) %>%
+    pivot_wider(names_from = shf_primaryetiology_cat, values_from = out) %>%
+    mutate(
+      medname = xname,
+      mednr = xnr
+    )
+}
+
+hf <- medfunc("meds_hf", "HFrEF medications (RASi/ARNi, BBl, MRA)", 2)
+tot <- medfunc("meds_both", "HFrEF/Hypertension medications (RASi/ARNi, BBl, MRA, Diuretics, CCB, Antiadrenerga)", 1)
+hyp <- medfunc("meds_hypertension", "Hypertension medications (RASi, BBl, MRA, Diuretics, CCB, Antiadrenerga)", 3)
+
+tab <- bind_rows(tot, hf, hyp) %>%
+  arrange(desc(shf_ef_cat), mednr) %>%
+  select(-mednr) %>%
+  select(shf_ef_cat, medname, everything())
+
+cn <- c("EF", "Type", colnames(tab)[3:6])
+
+make_one_xlsxsheet(tab, colnames = cn)
+
+default_kable(tab,
+  escape = FALSE,
+  col.names = cn
+) %>%
+  add_header_above(c(" " = 1, " " = 1, "Primary etiology" = 4)) %>%
+  footnote(
+    general_title = "",
+    general = c(
+      "Presented with mean (standard deviation)."
+    ),
+    threeparttable = T
+  )
+```

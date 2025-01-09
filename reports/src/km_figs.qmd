@@ -203,7 +203,7 @@ kmfunc(
 nr <- 1
 kmfunc(
   efcat = "HFpEF",
-  sexcat = "Female", 
+  sexcat = "Female",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -212,7 +212,7 @@ kmfunc(
 nr <- 2
 kmfunc(
   efcat = "HFpEF",
-  sexcat = "Female", 
+  sexcat = "Female",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -221,7 +221,7 @@ kmfunc(
 nr <- 3
 kmfunc(
   efcat = "HFpEF",
-  sexcat = "Female", 
+  sexcat = "Female",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -242,7 +242,7 @@ kmfunc(
 nr <- 1
 kmfunc(
   efcat = "HFmrEF",
-  sexcat = "Female", 
+  sexcat = "Female",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -251,7 +251,7 @@ kmfunc(
 nr <- 2
 kmfunc(
   efcat = "HFmrEF",
-  sexcat = "Female", 
+  sexcat = "Female",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -260,7 +260,7 @@ kmfunc(
 nr <- 3
 kmfunc(
   efcat = "HFmrEF",
-  sexcat = "Female", 
+  sexcat = "Female",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -281,7 +281,7 @@ kmfunc(
 nr <- 1
 kmfunc(
   efcat = "HFrEF",
-  sexcat = "Female", 
+  sexcat = "Female",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -290,7 +290,7 @@ kmfunc(
 nr <- 2
 kmfunc(
   efcat = "HFrEF",
-  sexcat = "Female", 
+  sexcat = "Female",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -299,7 +299,7 @@ kmfunc(
 nr <- 3
 kmfunc(
   efcat = "HFrEF",
-  sexcat = "Female", 
+  sexcat = "Female",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -320,7 +320,7 @@ kmfunc(
 nr <- 1
 kmfunc(
   efcat = "HFpEF",
-  sexcat = "Male", 
+  sexcat = "Male",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -329,7 +329,7 @@ kmfunc(
 nr <- 2
 kmfunc(
   efcat = "HFpEF",
-  sexcat = "Male", 
+  sexcat = "Male",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -338,7 +338,7 @@ kmfunc(
 nr <- 3
 kmfunc(
   efcat = "HFpEF",
-  sexcat = "Male", 
+  sexcat = "Male",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -359,7 +359,7 @@ kmfunc(
 nr <- 1
 kmfunc(
   efcat = "HFmrEF",
-  sexcat = "Male", 
+  sexcat = "Male",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -368,7 +368,7 @@ kmfunc(
 nr <- 2
 kmfunc(
   efcat = "HFmrEF",
-  sexcat = "Male", 
+  sexcat = "Male",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -377,7 +377,7 @@ kmfunc(
 nr <- 3
 kmfunc(
   efcat = "HFmrEF",
-  sexcat = "Male", 
+  sexcat = "Male",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -398,7 +398,7 @@ kmfunc(
 nr <- 1
 kmfunc(
   efcat = "HFrEF",
-  sexcat = "Male", 
+  sexcat = "Male",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -407,7 +407,7 @@ kmfunc(
 nr <- 2
 kmfunc(
   efcat = "HFrEF",
-  sexcat = "Male", 
+  sexcat = "Male",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],
@@ -416,7 +416,7 @@ kmfunc(
 nr <- 3
 kmfunc(
   efcat = "HFrEF",
-  sexcat = "Male", 
+  sexcat = "Male",
   time = outvars$time[nr],
   event = outvars$var[nr],
   eventname = outvars$shortname[nr],

@@ -58,6 +58,8 @@ tabvars <- c(
   "shf_anticoagulantia",
   "shf_asaantiplatelet",
   "shf_statin",
+  "sos_lm_ccb",
+  "sos_lm_antiadrenerga",
   "shf_device_cat",
 
   # socec
@@ -88,7 +90,9 @@ tabvars_not_in_mod <- c(
   "sos_com_charlsonci_cat",
   "shf_qol",
   "shf_qol_cat",
-  "shf_sglt2"
+  "shf_sglt2",
+  "sos_lm_ccb",
+  "sos_lm_antiadrenerga"
 )
 
 modvars <- tabvars[!(tabvars %in% tabvars_not_in_mod)]
