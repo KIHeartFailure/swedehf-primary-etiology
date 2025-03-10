@@ -65,5 +65,7 @@ for (i in seq_along(modvars)) {
   if (any(is.na(datacheck[, modvars[i]]))) print(paste0("Missing for ", modvars[i]))
 }
 
+# gender subgroups ------------------------------------------------------------
+
 imprsdatafemale <- mice::filter(imprsdata, rsdata$shf_sex == "Female")
 imprsdatamale <- mice::filter(imprsdata, rsdata$shf_sex == "Male")

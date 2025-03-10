@@ -204,7 +204,10 @@ basetabfunc <- function(data, x = "shf_primaryetiology_cat", novars = NULL) {
     add_row(Variable = paste0("a ", footnotetext[1])) %>%
     add_row(Variable = paste0("b ", footnotetext[2]))
 
-  make_one_xlsxsheet(tab_xls, colnames = cn)
+
+  if (output) {
+    make_one_xlsxsheet(tab_xls, colnames = cn)
+  }
 
   # footnotes
   tab <- tab %>%

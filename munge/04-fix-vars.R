@@ -24,7 +24,10 @@ rsdata <- rsdata %>%
       is.na(shf_arb) | is.na(shf_acei) ~ NA_character_,
       shf_arb == "Yes" | shf_acei == "Yes" ~ "Yes",
       TRUE ~ "No"
-    )
+    ),
+    # comp risk outcomes
+    sos_out_hosphf_cr = create_crevent(sos_out_hosphf, sos_out_death, eventvalues = c("Yes", "Yes")),
+    sos_out_hosphf_cr = factor(sos_out_hosphf_cr, levels = 0:2, labels = c("censor", "hfh", "death"))
   ) %>%
   mutate(
     meds_hypertension = rowSums(across(c("shf_rasi", "shf_bbl", "shf_mra", "shf_diuretic", "sos_lm_ccb", "sos_lm_antiadrenerga")) == "Yes"),
@@ -32,6 +35,7 @@ rsdata <- rsdata %>%
     meds_both = rowSums(across(c("shf_rasiarni", "shf_bbl", "shf_mra", "shf_diuretic", "sos_lm_ccb", "sos_lm_antiadrenerga")) == "Yes")
   )
 
+rsdata <- create_crvar(rsdata, "shf_primaryetiology_cat")
 
 # income
 inc <- rsdata %>%

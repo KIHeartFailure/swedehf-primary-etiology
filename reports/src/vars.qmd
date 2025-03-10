@@ -134,9 +134,11 @@ vars_xls <- vars %>%
   add_row(Variable = paste0("b ", footnotetext[3])) %>%
   add_row(Variable = paste0("c ", footnotetext[4]))
 
-make_one_xlsxsheet(vars_xls,
-  colnames = c("Variable", "Data source")
-)
+if (output) {
+  make_one_xlsxsheet(vars_xls,
+    colnames = c("Variable", "Data source")
+  )
+}
 
 vars <- vars %>%
   mutate(

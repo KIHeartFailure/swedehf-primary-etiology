@@ -51,7 +51,9 @@ doughnutfunc <- function(data) {
     theme(
       legend.position = "none"
     )
-  create_pptx(p, width = 6, height = 6)
+  if (output) {
+    create_pptx(p, width = 6, height = 6)
+  }
   p
 }
 ```

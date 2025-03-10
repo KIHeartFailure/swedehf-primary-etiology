@@ -34,7 +34,9 @@ trendfunc <- function(data, x = "shf_primaryetiology2") {
     labs(y = "Proportion (%)", x = "Year") +
     scale_y_continuous(limits = c(0, 60)) +
     scale_x_continuous(breaks = 2010:2023, guide = guide_axis(n.dodge = 2))
-  create_pptx(p)
+  if (output) {
+    create_pptx(p)
+  }
   p
 }
 ```

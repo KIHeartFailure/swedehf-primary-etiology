@@ -43,7 +43,10 @@ tab <- bind_rows(tot, hf, hyp) %>%
 
 cn <- c("EF", "Type", colnames(tab)[3:6])
 
-make_one_xlsxsheet(tab, colnames = cn)
+if (output) {
+  make_one_xlsxsheet(tab, colnames = cn)
+}
+
 
 default_kable(tab,
   escape = FALSE,

@@ -58,6 +58,7 @@ sheets <- names(wb)
 
 # load pptx file with figs
 figs <- officer::read_pptx(path = here::here("output/figs/figs.pptx"))
+output <- T
 ```           
 
 \newpage
@@ -253,7 +254,6 @@ The median (min-max) follow-up is
 `r medsurv` years for a total of `r sumsurv` patient-years of follow-up.
 
 {{< include src/outcomes.qmd >}}
-
 {{< include src/km_figs.qmd >}}
 
 \clearpage
